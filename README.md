@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # UT福祉カレッジ LPサイト
 
 株式会社UTILITY（UT福祉カレッジ）の「東京都強度行動障害支援者養成研修（基礎研修／実践研修）」LPサイトのソースコードです。
@@ -48,3 +49,6 @@ GitHub Pagesを利用してホスティングされています。
 2. 本リポジトリの `Settings` > `Pages` にある `Custom domain` 欄に取得したドメインを入力し、`Save` します。
 3. 念のため `Enforce HTTPS` にチェックが入っていることを確認します。
 4. `sitemap.xml` と `robots.txt`、各種メタタグ・OGP・JSON-LD内のURL (`https://utility-s.github.io/ut-college/`) を新しいドメインに一括置換します。
+=======
+# ut-college
+>>>>>>> 3b614fddf0026d1f70eb6f2cb2585f6d4643e847
