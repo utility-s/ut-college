@@ -179,8 +179,9 @@ h1, h2, h3, h4, h5, h6, p {
    ========================================================================== */
 .hero {
   padding: calc(var(--header-height) + 60px) 0 80px;
-  background: linear-gradient(135deg, var(--color-bg-light) 0%, #fff 100%);
+  background: linear-gradient(rgba(30, 60, 30, 0.75), rgba(30, 60, 30, 0.85)), url('../images/seminar-room.jpg') center/cover no-repeat;
   text-align: center;
+  color: #fff;
 }
 .hero-badge {
   display: inline-block;
@@ -196,16 +197,20 @@ h1, h2, h3, h4, h5, h6, p {
   font-size: 2.5rem;
   font-weight: 700;
   line-height: 1.4;
-  color: var(--color-main-dark);
+  color: #fff;
   margin-bottom: 15px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
 }
 .hero-subtitle {
   font-size: 1.2rem;
   font-weight: 500;
+  color: #f7f9f5;
   margin-bottom: 30px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
 }
 .hero-schedule {
   background-color: #fff;
+  color: #333;
   border: 2px solid var(--color-sub);
   border-radius: 8px;
   padding: 20px;
@@ -723,6 +728,108 @@ h1, h2, h3, h4, h5, h6, p {
   margin-bottom: 15px;
   border-bottom: 1px solid var(--color-border);
   padding-bottom: 10px;
+}
+
+/* ==========================================================================
+   Services Page & Mini Banner
+   ========================================================================== */
+.service-message {
+  max-width: 800px;
+  margin: 0 auto 60px;
+  background-color: var(--color-bg-light);
+  padding: 40px;
+  border-radius: 8px;
+  border-left: 4px solid var(--color-main);
+}
+.service-message p {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 15px;
+}
+.service-message p:last-child {
+  margin-bottom: 0;
+}
+.service-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+.service-card {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+.service-card-header {
+  background-color: var(--color-main);
+  color: #fff;
+  padding: 20px 30px;
+}
+.service-card-header h3 {
+  font-size: 1.4rem;
+  margin: 0;
+}
+.service-card-body {
+  padding: 30px;
+}
+.service-card-section {
+  margin-bottom: 25px;
+}
+.service-card-section:last-child {
+  margin-bottom: 0;
+}
+.service-card-section h4 {
+  color: var(--color-main-dark);
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.service-card-section h4::before {
+  content: '■';
+  color: var(--color-sub);
+  font-size: 0.9rem;
+}
+.service-card-section ul {
+  padding-left: 20px;
+}
+.service-card-section ul li {
+  list-style-type: disc;
+  margin-bottom: 8px;
+}
+.service-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  background-color: var(--color-bg-light);
+  padding: 15px;
+  border-radius: 8px;
+}
+.service-flow-step {
+  font-weight: 700;
+  color: var(--color-main-dark);
+}
+.service-flow-arrow {
+  color: var(--color-sub);
+}
+
+.mini-banner {
+  background-color: var(--color-bg-light);
+  text-align: center;
+  padding: 30px 20px;
+  border-top: 1px solid var(--color-border);
+}
+.mini-banner p {
+  margin-bottom: 15px;
+  font-weight: 700;
+  color: var(--color-main-dark);
+}
+.mini-banner .btn {
+  padding: 10px 30px;
+  font-size: 1rem;
 }
 
 /* ==========================================================================
