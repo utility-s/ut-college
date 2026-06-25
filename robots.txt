@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://utility-s.github.io/ut-college/sitemap.xml
