@@ -687,6 +687,9 @@ h1, h2, h3, h4, h5, h6, p {
 .footer-info p {
   margin-bottom: 10px;
 }
+.footer-links {
+  margin-top: 30px;
+}
 .footer-links ul li {
   margin-bottom: 10px;
 }
@@ -864,6 +867,9 @@ h1, h2, h3, h4, h5, h6, p {
   .hero-title { font-size: 1.8rem; }
   .empathy-list, .benefit-cols, .reason-grid, .course-compare, .footer-inner {
     grid-template-columns: 1fr;
+  }
+  .footer-links {
+    margin-top: 0;
   }
   .teacher-profile {
     flex-direction: column;
