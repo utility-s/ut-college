@@ -179,7 +179,7 @@ h1, h2, h3, h4, h5, h6, p {
    ========================================================================== */
 .hero {
   padding: calc(var(--header-height) + 60px) 0 80px;
-  background: linear-gradient(rgba(30, 60, 30, 0.75), rgba(30, 60, 30, 0.85)), url('../images/seminar-room.jpg') center/cover no-repeat;
+  background: linear-gradient(rgba(30, 60, 30, 0.75), rgba(30, 60, 30, 0.85)), url('../images/venue-room.jpg') center/cover no-repeat;
   text-align: center;
   color: #fff;
 }
@@ -968,6 +968,15 @@ h1, h2, h3, h4, h5, h6, p {
 /* ========== スクロール時にヘッダーへ隠れない ========== */
 section[id], [id] { scroll-margin-top: 90px; }
 
+/* ハンバーガーボタン（PCでは非表示） */
+.hamburger {
+  display: none; flex-direction: column; justify-content: center; gap: 5px;
+  width: 44px; height: 44px; background: none; border: none; cursor: pointer; padding: 0;
+}
+.hamburger span {
+  display: block; width: 26px; height: 3px;
+  background: var(--color-main); border-radius: 2px; transition: 0.3s;
+}
 /* ========== レスポンシブ対応 ========== */
 @media (max-width: 1024px) {
   .section { padding: 60px 0; }
@@ -1006,12 +1015,4 @@ section[id], [id] { scroll-margin-top: 90px; }
   .btn { padding: 13px 24px; font-size: 1rem; }
 }
 
-/* ハンバーガーボタン（PCでは非表示） */
-.hamburger {
-  display: none; flex-direction: column; justify-content: center; gap: 5px;
-  width: 44px; height: 44px; background: none; border: none; cursor: pointer; padding: 0;
-}
-.hamburger span {
-  display: block; width: 26px; height: 3px;
-  background: var(--color-main); border-radius: 2px; transition: 0.3s;
-}
+
