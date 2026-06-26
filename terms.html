@@ -10,8 +10,11 @@
   <header class="header">
     <div class="header-inner">
       <a href="index.html" class="logo">
-        <img src="images/logo.png" alt="UT福祉カレッジ" width="200" height="40">
+        <img src="images/logo.png" alt="UT福祉カレッジ" width="260" height="52" style="width: auto; height: 52px;">
       </a>
+      <button class="hamburger" id="hamburger" aria-label="メニューを開く" aria-expanded="false">
+  <span></span><span></span><span></span>
+</button>
       <nav class="header-nav">
         <ul class="header-nav-list">
           <li><a href="index.html">ホーム</a></li>
@@ -119,5 +122,18 @@
     </div>
   </footer>
   <script src="js/main.js"></script>
+<script>
+  const ham = document.getElementById('hamburger');
+  const nav = document.querySelector('.header-nav');
+  if (ham && nav) {
+    ham.addEventListener('click', () => {
+      const open = nav.classList.toggle('is-open');
+      ham.setAttribute('aria-expanded', open);
+    });
+    nav.querySelectorAll('a').forEach(a =>
+      a.addEventListener('click', () => nav.classList.remove('is-open'))
+    );
+  }
+</script>
 </body>
 </html>

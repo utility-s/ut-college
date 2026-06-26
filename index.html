@@ -71,8 +71,27 @@
       {
         "@type": "Event",
         "name": "東京都強度行動障害支援者養成研修（基礎研修）",
-        "startDate": "2026-02-05",
-        "endDate": "2026-02-06",
+        "startDate": "2026-08-06",
+        "endDate": "2026-08-07",
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "eventStatus": "https://schema.org/EventScheduled",
+        "location": {
+          "@type": "Place",
+          "name": "山本ビル3F",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "熊川1708-1 山本ビル3F",
+            "addressLocality": "福生市",
+            "addressRegion": "東京都",
+            "addressCountry": "JP"
+          }
+        }
+      },
+      {
+        "@type": "Event",
+        "name": "東京都強度行動障害支援者養成研修（実践研修）",
+        "startDate": "2026-11-05",
+        "endDate": "2026-11-06",
         "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
         "eventStatus": "https://schema.org/EventScheduled",
         "location": {
@@ -129,8 +148,11 @@
   <header class="header">
     <div class="header-inner">
       <a href="#" class="logo">
-        <img src="images/logo.png" alt="UT福祉カレッジ" width="200" height="40">
+        <img src="images/logo.png" alt="UT福祉カレッジ" width="260" height="52" style="width: auto; height: 52px;">
       </a>
+      <button class="hamburger" id="hamburger" aria-label="メニューを開く" aria-expanded="false">
+  <span></span><span></span><span></span>
+</button>
       <nav class="header-nav">
         <ul class="header-nav-list">
           <li><a href="index.html">ホーム</a></li>
@@ -168,15 +190,17 @@
         <p class="hero-subtitle">東京都強度行動障害支援者養成研修〈基礎／実践〉<br>会場：拝島駅 徒歩2分</p>
         
         <!-- 次回開催日程（更新箇所） -->
-        <div class="hero-schedule">
+                <div class="hero-schedule">
           <p>【次回開催日程】 ※対面（会場）開催のみとなります</p>
-          <p><span class="date">基礎研修：2026年2月5日(木)〜6日(金)</span></p>
-          <p><span class="date">実践研修：2026年3月12日(木)〜13日(金)</span></p>
+          <p><span class="date">基礎研修：2026年8月6日(木)〜7日(金)</span></p>
+          <p><span class="date">実践研修：2026年11月5日(木)〜6日(金)</span></p>
         </div>
+        <p style="margin-top:10px; font-weight:700;">受講料 21,500円（税込・テキスト代込）</p>
 
         <div class="text-center">
           <!-- TODO: 外部フォームURL -->
           <a href="https://docs.google.com/forms/d/e/1FAIpQLSePDVOsYhIBRIPuHGyegQP8HumM7EN6QQeE5Xfd3BGoet1c9A/viewform" target="_blank" rel="noopener" class="btn btn-cta" style="font-size: 1.3rem; padding: 20px 60px;">受講をお申し込む</a>
+          <p class="note mt-20" style="color:#fff; font-weight:700;">各回 定員15名（最大16名）｜定員に達し次第締切</p>
           <p class="note mt-20">※オンライン開催は今後対応予定です</p>
         </div>
       </div>
@@ -583,5 +607,18 @@
   </footer>
 
   <script src="js/main.js"></script>
+<script>
+  const ham = document.getElementById('hamburger');
+  const nav = document.querySelector('.header-nav');
+  if (ham && nav) {
+    ham.addEventListener('click', () => {
+      const open = nav.classList.toggle('is-open');
+      ham.setAttribute('aria-expanded', open);
+    });
+    nav.querySelectorAll('a').forEach(a =>
+      a.addEventListener('click', () => nav.classList.remove('is-open'))
+    );
+  }
+</script>
 </body>
 </html>

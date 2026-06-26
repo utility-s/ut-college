@@ -52,7 +52,7 @@ h1, h2, h3, h4, h5, h6, p {
   --color-cta-hover: #bda223;
   --color-bg-light: #F7F9F5;
   --color-border: #E0E0E0;
-  --header-height: 70px;
+  --header-height: 80px;
   --container-width: 1000px;
 }
 
@@ -149,7 +149,7 @@ h1, h2, h3, h4, h5, h6, p {
   padding: 0 20px;
 }
 .header .logo img {
-  height: 40px;
+  height: 52px;
   width: auto;
 }
 .header-nav {
@@ -962,3 +962,56 @@ h1, h2, h3, h4, h5, h6, p {
 .service-card-image img { width:100%; height:100%; object-fit:cover; }
 .btn-outline-white { background-color: transparent; color: #fff !important; border: 2px solid #fff; display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: 700; transition: background-color 0.3s, color 0.3s; }
 .btn-outline-white:hover { background-color: #fff; color: var(--color-main-dark) !important; }
+
+.btn-cta { color: #3a2f00 !important; font-weight: 700; }
+
+/* ========== スクロール時にヘッダーへ隠れない ========== */
+section[id], [id] { scroll-margin-top: 90px; }
+
+/* ========== レスポンシブ対応 ========== */
+@media (max-width: 1024px) {
+  .section { padding: 60px 0; }
+  .hero-title { font-size: 2.1rem; }
+  .header-nav-list { gap: 14px; }
+  .header-nav-list a { font-size: 0.88rem; }
+}
+@media (max-width: 768px) {
+  :root { --header-height: 64px; }
+  .section { padding: 48px 0; }
+  .container { padding: 0 16px; }
+  body { line-height: 1.7; }
+  .empathy-list, .benefit-cols, .reason-grid, .course-compare,
+  .service-cards { grid-template-columns: 1fr; gap: 16px; }
+  .hero-title { font-size: 1.7rem; line-height: 1.45; }
+  .hero-subtitle { font-size: 1rem; }
+  .hero-schedule { display: block; padding: 16px; }
+  .hero .btn { width: 100%; padding: 16px 20px !important; font-size: 1.1rem !important; }
+  .teacher-profile { flex-direction: column; gap: 20px; padding: 24px; }
+  .teacher-img { flex: none; max-width: 220px; margin: 0 auto; }
+  .section-title { font-size: 1.4rem; }
+  .header-nav { display: none; }
+  .hamburger { display: flex; }
+  .header-nav.is-open {
+    display: flex; flex-direction: column; align-items: stretch;
+    position: fixed; top: var(--header-height); left: 0; width: 100%;
+    background: #fff; padding: 16px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); gap: 0;
+  }
+  .header-nav.is-open .header-nav-list { flex-direction: column; gap: 0; }
+  .header-nav.is-open .header-nav-list li { border-bottom: 1px solid var(--color-border); }
+  .header-nav.is-open .header-nav-list a { display: block; padding: 14px 8px; }
+  .header-nav.is-open .header-cta { margin-top: 12px; text-align: center; }
+}
+@media (max-width: 380px) {
+  .hero-title { font-size: 1.45rem; }
+  .btn { padding: 13px 24px; font-size: 1rem; }
+}
+
+/* ハンバーガーボタン（PCでは非表示） */
+.hamburger {
+  display: none; flex-direction: column; justify-content: center; gap: 5px;
+  width: 44px; height: 44px; background: none; border: none; cursor: pointer; padding: 0;
+}
+.hamburger span {
+  display: block; width: 26px; height: 3px;
+  background: var(--color-main); border-radius: 2px; transition: 0.3s;
+}
