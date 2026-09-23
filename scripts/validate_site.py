@@ -86,6 +86,8 @@ def validate():
                 '2026年10月20日',
                 '2026年10月12日',
                 '追加募集受付中',
+                '2027年2月4日',
+                '2027年1月28日',
                 '21,500円',
                 google_form_url
             ]
@@ -114,59 +116,97 @@ def validate():
                     sys.exit(1)
 
                 if "@graph" in data:
-                    kiso_events = []
+                    kiso_oct_events = []
+                    kiso_feb_events = []
                     jissen_events = []
                     for item in data["@graph"]:
                         if item.get("@type") == "Event":
-                            if "基礎研修" in item.get("name", ""):
-                                kiso_events.append(item)
-                            elif "実践研修" in item.get("name", ""):
+                            name = item.get("name", "")
+                            if "基礎研修" in name:
+                                if "2026年10月開催" in name or "2026-10-19" in item.get("startDate", ""):
+                                    kiso_oct_events.append(item)
+                                elif "2027年2月開催" in name or "2027-02-04" in item.get("startDate", ""):
+                                    kiso_feb_events.append(item)
+                            elif "実践研修" in name:
                                 jissen_events.append(item)
 
-                    # 基礎研修Eventが1件存在する
-                    if len(kiso_events) != 1:
-                        print(f"FAILED: Expected exactly 1 基礎研修 Event, found {len(kiso_events)}")
+                    # 基礎研修（2026年10月開催）Eventの検証
+                    if len(kiso_oct_events) != 1:
+                        print(f"FAILED: Expected exactly 1 基礎研修(10月) Event, found {len(kiso_oct_events)}")
                         sys.exit(1)
-                    kiso = kiso_events[0]
-
-                    # 基礎研修Eventの検証
-                    if "基礎研修" not in kiso.get("name", ""):
-                        print("FAILED: 基礎研修 name does not contain '基礎研修'")
+                    kiso_oct = kiso_oct_events[0]
+                    if kiso_oct.get("startDate") != "2026-10-19T09:30:00+09:00":
+                        print(f"FAILED: 基礎研修(10月) startDate mismatch: {kiso_oct.get('startDate')}")
                         sys.exit(1)
-                    if kiso.get("startDate") != "2026-10-19T09:30:00+09:00":
-                        print(f"FAILED: 基礎研修 startDate mismatch: {kiso.get('startDate')}")
+                    if kiso_oct.get("endDate") != "2026-10-20T17:30:00+09:00":
+                        print(f"FAILED: 基礎研修(10月) endDate mismatch: {kiso_oct.get('endDate')}")
                         sys.exit(1)
-                    if kiso.get("endDate") != "2026-10-20T17:30:00+09:00":
-                        print(f"FAILED: 基礎研修 endDate mismatch: {kiso.get('endDate')}")
+                    if kiso_oct.get("eventStatus") != "https://schema.org/EventScheduled":
+                        print(f"FAILED: 基礎研修(10月) eventStatus mismatch: {kiso_oct.get('eventStatus')}")
                         sys.exit(1)
-                    if kiso.get("eventStatus") != "https://schema.org/EventScheduled":
-                        print(f"FAILED: 基礎研修 eventStatus mismatch: {kiso.get('eventStatus')}")
+                    if kiso_oct.get("eventAttendanceMode") != "https://schema.org/OfflineEventAttendanceMode":
+                        print("FAILED: 基礎研修(10月) eventAttendanceMode not Offline")
                         sys.exit(1)
-                    if kiso.get("eventAttendanceMode") != "https://schema.org/OfflineEventAttendanceMode":
-                        print("FAILED: 基礎研修 eventAttendanceMode not Offline")
-                        sys.exit(1)
-                    if kiso.get("performer", {}).get("name") != "若林佳史":
-                        print(f"FAILED: 基礎研修 performer mismatch: {kiso.get('performer')}")
+                    if kiso_oct.get("performer", {}).get("name") != "若林佳史":
+                        print(f"FAILED: 基礎研修(10月) performer mismatch: {kiso_oct.get('performer')}")
                         sys.exit(1)
 
-                    kiso_offers = kiso.get("offers", {})
-                    if str(kiso_offers.get("price")) != "21500":
-                        print(f"FAILED: 基礎研修 price mismatch: {kiso_offers.get('price')}")
+                    kiso_oct_offers = kiso_oct.get("offers", {})
+                    if str(kiso_oct_offers.get("price")) != "21500":
+                        print(f"FAILED: 基礎研修(10月) price mismatch: {kiso_oct_offers.get('price')}")
                         sys.exit(1)
-                    if kiso_offers.get("priceCurrency") != "JPY":
-                        print(f"FAILED: 基礎研修 priceCurrency mismatch: {kiso_offers.get('priceCurrency')}")
+                    if kiso_oct_offers.get("priceCurrency") != "JPY":
+                        print(f"FAILED: 基礎研修(10月) priceCurrency mismatch: {kiso_oct_offers.get('priceCurrency')}")
                         sys.exit(1)
-                    if kiso_offers.get("availability") != "https://schema.org/InStock":
-                        print(f"FAILED: 基礎研修 availability mismatch: {kiso_offers.get('availability')}")
+                    if kiso_oct_offers.get("availability") != "https://schema.org/InStock":
+                        print(f"FAILED: 基礎研修(10月) availability mismatch: {kiso_oct_offers.get('availability')}")
                         sys.exit(1)
-                    if kiso_offers.get("validThrough") != "2026-10-12":
-                        print(f"FAILED: 基礎研修 validThrough mismatch: {kiso_offers.get('validThrough')}")
+                    if kiso_oct_offers.get("validThrough") != "2026-10-12":
+                        print(f"FAILED: 基礎研修(10月) validThrough mismatch: {kiso_oct_offers.get('validThrough')}")
                         sys.exit(1)
-                    if kiso_offers.get("url") != google_form_url:
-                        print(f"FAILED: 基礎研修 url mismatch: {kiso_offers.get('url')}")
+                    if kiso_oct_offers.get("url") != google_form_url:
+                        print(f"FAILED: 基礎研修(10月) url mismatch: {kiso_oct_offers.get('url')}")
                         sys.exit(1)
-                    if "+09:00" not in kiso.get("startDate", "") or "+09:00" not in kiso.get("endDate", ""):
-                        print("FAILED: 基礎研修 dates missing +09:00 timezone")
+
+                    # 基礎研修（2027年2月開催）Eventの検証
+                    if len(kiso_feb_events) != 1:
+                        print(f"FAILED: Expected exactly 1 基礎研修(2027年2月) Event, found {len(kiso_feb_events)}")
+                        sys.exit(1)
+                    kiso_feb = kiso_feb_events[0]
+                    if "東京都強度行動障害支援者養成研修（基礎研修・2027年2月開催）" not in kiso_feb.get("name", ""):
+                        print(f"FAILED: 基礎研修(2027年2月) name mismatch: {kiso_feb.get('name')}")
+                        sys.exit(1)
+                    if kiso_feb.get("startDate") != "2027-02-04T09:30:00+09:00":
+                        print(f"FAILED: 基礎研修(2027年2月) startDate mismatch: {kiso_feb.get('startDate')}")
+                        sys.exit(1)
+                    if kiso_feb.get("endDate") != "2027-02-05T17:30:00+09:00":
+                        print(f"FAILED: 基礎研修(2027年2月) endDate mismatch: {kiso_feb.get('endDate')}")
+                        sys.exit(1)
+                    if kiso_feb.get("eventStatus") != "https://schema.org/EventScheduled":
+                        print(f"FAILED: 基礎研修(2027年2月) eventStatus mismatch: {kiso_feb.get('eventStatus')}")
+                        sys.exit(1)
+                    if kiso_feb.get("eventAttendanceMode") != "https://schema.org/OfflineEventAttendanceMode":
+                        print("FAILED: 基礎研修(2027年2月) eventAttendanceMode not Offline")
+                        sys.exit(1)
+                    if kiso_feb.get("performer", {}).get("name") != "若林佳史":
+                        print(f"FAILED: 基礎研修(2027年2月) performer mismatch: {kiso_feb.get('performer')}")
+                        sys.exit(1)
+
+                    kiso_feb_offers = kiso_feb.get("offers", {})
+                    if str(kiso_feb_offers.get("price")) != "21500":
+                        print(f"FAILED: 基礎研修(2027年2月) price mismatch: {kiso_feb_offers.get('price')}")
+                        sys.exit(1)
+                    if kiso_feb_offers.get("priceCurrency") != "JPY":
+                        print(f"FAILED: 基礎研修(2027年2月) priceCurrency mismatch: {kiso_feb_offers.get('priceCurrency')}")
+                        sys.exit(1)
+                    if kiso_feb_offers.get("availability") != "https://schema.org/InStock":
+                        print(f"FAILED: 基礎研修(2027年2月) availability mismatch: {kiso_feb_offers.get('availability')}")
+                        sys.exit(1)
+                    if kiso_feb_offers.get("validThrough") != "2027-01-28":
+                        print(f"FAILED: 基礎研修(2027年2月) validThrough mismatch: {kiso_feb_offers.get('validThrough')}")
+                        sys.exit(1)
+                    if kiso_feb_offers.get("url") != google_form_url:
+                        print(f"FAILED: 基礎研修(2027年2月) url mismatch: {kiso_feb_offers.get('url')}")
                         sys.exit(1)
 
                     # 実践研修Eventの検証
