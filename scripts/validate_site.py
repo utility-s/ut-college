@@ -1,5 +1,6 @@
 import json
 import re
+from datetime import date, timedelta
 from pathlib import Path
 import sys
 
@@ -63,6 +64,12 @@ def validate():
                 print(f"FAILED: {fname} contains broken relative link: {link}")
                 sys.exit(1)
 
+        if fname == 'tokushoho.html':
+            for req in ['17,980円', '3,520円']:
+                if req not in text:
+                    print(f"FAILED: tokushoho.html missing required text: '{req}'")
+                    sys.exit(1)
+
         if fname == 'index.html':
             # 5. index.htmlに「強度行動障害支援者養成研修」が存在する
             if '強度行動障害支援者養成研修' not in text:
@@ -89,12 +96,24 @@ def validate():
                 '2027年2月4日',
                 '2027年1月28日',
                 '21,500円',
+                '17,980円',
+                '3,520円',
                 google_form_url
             ]
             for req in required_strings:
                 if req not in text:
                     print(f"FAILED: index.html missing required text: '{req}'")
                     sys.exit(1)
+
+            # 画面FAQの申込締切の回答（HTML）に年月日が無いこと
+            faq_match = re.search(r'<div class="faq-question">\s*申込締切はいつですか？\s*</div>\s*<div class="faq-answer">(.*?)</div>', text, re.DOTALL)
+            if not faq_match:
+                print("FAILED: index.html missing screen FAQ for '申込締切はいつですか？'")
+                sys.exit(1)
+            screen_faq_answer = faq_match.group(1)
+            if re.search(r'\d{4}年\d{1,2}月\d{1,2}日', screen_faq_answer):
+                print("FAILED: index.html screen FAQ answer contains specific date (YYYY年M月D日)")
+                sys.exit(1)
 
             # 旧基礎研修情報の残存チェック
             found_old = [p for p in old_kiso_patterns if p in text]
@@ -129,6 +148,41 @@ def validate():
                                     kiso_feb_events.append(item)
                             elif "実践研修" in name:
                                 jissen_events.append(item)
+
+                            # 全Eventについて、各Offerの validThrough が startDate の日付の7日前と一致することを確認する
+                            start_str = item.get("startDate", "")
+                            start_date_str = start_str[:10]
+                            try:
+                                start_date = date.fromisoformat(start_date_str)
+                            except Exception as e:
+                                print(f"FAILED: Event {name} invalid startDate format: {start_str}")
+                                sys.exit(1)
+                            expected_valid_through = (start_date - timedelta(days=7)).isoformat()
+
+                            raw_offers = item.get("offers")
+                            offers_list = raw_offers if isinstance(raw_offers, list) else [raw_offers] if isinstance(raw_offers, dict) else []
+                            if not offers_list:
+                                print(f"FAILED: Event {name} missing offers")
+                                sys.exit(1)
+                            for o in offers_list:
+                                if o.get("validThrough") != expected_valid_through:
+                                    print(f"FAILED: Event {name} offer validThrough mismatch. Expected {expected_valid_through}, got {o.get('validThrough')}")
+                                    sys.exit(1)
+
+                        if item.get("@type") == "FAQPage":
+                            main_entity = item.get("mainEntity", [])
+                            deadline_questions = [q for q in main_entity if q.get("name") == "申込締切はいつですか？"]
+                            if len(deadline_questions) != 1:
+                                print(f"FAILED: Expected exactly 1 FAQPage question '申込締切はいつですか？', found {len(deadline_questions)}")
+                                sys.exit(1)
+                            deadline_q = deadline_questions[0]
+                            ans_text = deadline_q.get("acceptedAnswer", {}).get("text", "")
+                            if "開催初日の7日前" not in ans_text:
+                                print("FAILED: FAQPage deadline question answer missing '開催初日の7日前'")
+                                sys.exit(1)
+                            if re.search(r'\d{4}年\d{1,2}月\d{1,2}日', ans_text):
+                                print("FAILED: FAQPage deadline question answer contains specific date (YYYY年M月D日)")
+                                sys.exit(1)
 
                     # 基礎研修（2026年10月開催）Eventの検証
                     if len(kiso_oct_events) != 1:
@@ -229,16 +283,38 @@ def validate():
                     if jissen.get("performer", {}).get("name") != "若林佳史":
                         print(f"FAILED: 実践研修 performer mismatch: {jissen.get('performer')}")
                         sys.exit(1)
-
-                    jissen_offers = jissen.get("offers", {})
-                    if jissen_offers.get("availability") != "https://schema.org/InStock":
-                        print(f"FAILED: 実践研修 availability mismatch: {jissen_offers.get('availability')}")
-                        sys.exit(1)
-                    if jissen_offers.get("validThrough") != "2026-10-29":
-                        print(f"FAILED: 実践研修 validThrough mismatch: {jissen_offers.get('validThrough')}")
-                        sys.exit(1)
                     if "+09:00" not in jissen.get("startDate", "") or "+09:00" not in jissen.get("endDate", ""):
                         print("FAILED: 実践研修 dates missing +09:00 timezone")
+                        sys.exit(1)
+
+                    jissen_offers_raw = jissen.get("offers")
+                    if isinstance(jissen_offers_raw, list):
+                        prices = {str(o.get("price")) for o in jissen_offers_raw}
+                        if prices != {"21500", "17980"}:
+                            print(f"FAILED: 実践研修 list offers prices mismatch: {prices}")
+                            sys.exit(1)
+                        for o in jissen_offers_raw:
+                            if o.get("availability") != "https://schema.org/InStock":
+                                print(f"FAILED: 実践研修 offer availability mismatch: {o.get('availability')}")
+                                sys.exit(1)
+                            if o.get("validThrough") != "2026-10-29":
+                                print(f"FAILED: 実践研修 offer validThrough mismatch: {o.get('validThrough')}")
+                                sys.exit(1)
+                            if o.get("priceCurrency") != "JPY":
+                                print(f"FAILED: 実践研修 offer priceCurrency mismatch: {o.get('priceCurrency')}")
+                                sys.exit(1)
+                            if o.get("url") != google_form_url:
+                                print(f"FAILED: 実践研修 offer url mismatch: {o.get('url')}")
+                                sys.exit(1)
+                    elif isinstance(jissen_offers_raw, dict):
+                        if jissen_offers_raw.get("availability") != "https://schema.org/InStock":
+                            print(f"FAILED: 実践研修 availability mismatch: {jissen_offers_raw.get('availability')}")
+                            sys.exit(1)
+                        if jissen_offers_raw.get("validThrough") != "2026-10-29":
+                            print(f"FAILED: 実践研修 validThrough mismatch: {jissen_offers_raw.get('validThrough')}")
+                            sys.exit(1)
+                    else:
+                        print("FAILED: 実践研修 offers is neither dict nor list")
                         sys.exit(1)
 
         # 10. index.html、terms.html、tokushoho.htmlに返金規定が存在する

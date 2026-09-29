@@ -180,15 +180,28 @@
         "@type": "Person",
         "name": "若林佳史"
       },
-      "offers": {
-        "@type": "Offer",
-        "price": "21500",
-        "priceCurrency": "JPY",
-        "availability": "https://schema.org/InStock",
-        "url": "https://docs.google.com/forms/d/e/1FAIpQLSePDVOsYhIBRIPuHGyegQP8HumM7EN6QQeE5Xfd3BGoet1c9A/viewform",
-        "validFrom": "2026-06-01",
-        "validThrough": "2026-10-29"
-      }
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "研修費＋テキスト代",
+          "price": "21500",
+          "priceCurrency": "JPY",
+          "availability": "https://schema.org/InStock",
+          "url": "https://docs.google.com/forms/d/e/1FAIpQLSePDVOsYhIBRIPuHGyegQP8HumM7EN6QQeE5Xfd3BGoet1c9A/viewform",
+          "validFrom": "2026-06-01",
+          "validThrough": "2026-10-29"
+        },
+        {
+          "@type": "Offer",
+          "name": "研修費のみ（指定テキストをお持ちの方）",
+          "price": "17980",
+          "priceCurrency": "JPY",
+          "availability": "https://schema.org/InStock",
+          "url": "https://docs.google.com/forms/d/e/1FAIpQLSePDVOsYhIBRIPuHGyegQP8HumM7EN6QQeE5Xfd3BGoet1c9A/viewform",
+          "validFrom": "2026-06-01",
+          "validThrough": "2026-10-29"
+        }
+      ]
     },
     {
       "@type": "LocalBusiness",
@@ -204,6 +217,14 @@
     {
       "@type": "FAQPage",
       "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "申込締切はいつですか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "各研修の申込締切は、開催初日の7日前です。各回の締切日は、本ページの開催日程欄に掲載しています。なお、定員に達した場合は、申込締切日前でも受付を終了します。"
+          }
+        },
         {
           "@type": "Question",
           "name": "受講要件はありますか？",
@@ -300,7 +321,8 @@
           <p><span class="date" style="font-size:1rem;">開催時間：両日とも 9:30〜17:30（昼休憩1時間を含む）</span></p>
           <p style="font-size:0.85rem; margin-top:6px;">※実践研修のお申込みには基礎研修の修了証が必要です</p>
         </div>
-        <p style="margin-top:10px; font-weight:700;">受講料 21,500円（税込・テキスト代込）</p>
+        <p style="margin-top:10px; font-weight:700; line-height:1.6;"><span style="white-space: nowrap;">受講料（税込）</span><span style="white-space: nowrap;">研修費 17,980円 ＋ </span><span style="white-space: nowrap;">テキスト代 3,520円 ＝ </span><span style="white-space: nowrap;">合計 21,500円</span></p>
+        <p style="font-size:0.85rem; margin-top:4px; line-height:1.5;">※テキストは基礎研修・実践研修共通です。実践研修は、指定テキストをお持ちの方はテキスト代不要（研修費17,980円のみ）です。</p>
 
         <div class="hero-refund-policy">
           <h4>【キャンセル・返金について】</h4>
@@ -580,8 +602,8 @@
       <div class="container">
         <div class="price-card">
           <div class="price-title">受講料（基礎研修・実践研修 共通）</div>
-          <div class="price-amount">21,500<span>円（税込）</span></div>
-          <p>※テキスト代込み</p>
+          <div style="font-size: 1.35rem; font-weight: 700; color: var(--color-main-dark); margin: 15px 0; line-height: 1.6;"><span style="white-space: nowrap;">研修費 17,980円（税込）</span>／<span style="white-space: nowrap;">テキスト代 3,520円（税込）</span>／<span style="white-space: nowrap;">合計 21,500円（税込）</span></div>
+          <p style="font-size:0.85rem; margin-top:10px; line-height:1.5;">※テキストは基礎研修・実践研修共通です。実践研修は、指定テキストをお持ちの方はテキスト代不要（研修費17,980円のみ）です。</p>
         </div>
       </div>
     </section>
@@ -650,7 +672,7 @@
             <div class="flow-content" style="display: flex; gap: 20px; align-items: center;">
               <div style="flex: 1;">
                 <h3>受講当日・教材のお渡し</h3>
-                <p>研修当日に会場へお越しください。テキスト等の教材は会場にてお渡しいたします。</p>
+                <p>研修当日に会場へお越しください。テキスト等の教材は会場にてお渡しいたします。実践研修で指定テキストをお持ちの方は、当日ご持参ください。</p>
               </div>
               <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#4A7A4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
             </div>
@@ -681,11 +703,7 @@
           <div class="faq-item">
             <div class="faq-question">申込締切はいつですか？</div>
             <div class="faq-answer">
-              <p>各研修の申込締切は以下の通りです。<br>
-              ・基礎研修（2026年度 第2回）：2026年10月12日<br>
-              ・実践研修：2026年10月29日<br>
-              ・基礎研修（2026年度 第3回）：2027年1月28日<br>
-              ※定員に達した場合は、締切日前でも受付を終了する場合があります。</p>
+              <p>各研修の申込締切は、開催初日の7日前です。各回の締切日は、本ページの「<a href="#curriculum">開催日程</a>」でご確認ください。なお、定員に達した場合は、申込締切日前でも受付を終了します。</p>
             </div>
           </div>
           <div class="faq-item">
