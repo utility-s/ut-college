@@ -101,11 +101,22 @@ def validate():
                 sys.exit(1)
             hero_price_block = hero_price_match.group(1)
 
-            # (2) hero-price ブロック内に「基礎研修」「実践研修」「21,500」「17,980円」「3,520円」「指定テキストをお持ちの方」が含まれること
-            for req in ['基礎研修', '実践研修', '21,500', '17,980円', '3,520円', '指定テキストをお持ちの方']:
+            # (2) hero-price ブロック内に必須文言が含まれること
+            hero_price_reqs = [
+                '基礎研修', '実践研修', '21,500', '17,980円', '3,520円', '指定テキストをお持ちの方',
+                '中央法規出版', '強度行動障害支援者養成研修［基礎研修・実践研修］テキスト',
+                '2020年11月20日発行', '旧版', '対象外'
+            ]
+            for req in hero_price_reqs:
                 if req not in hero_price_block:
                     print(f"FAILED: hero-price block missing required text: '{req}'")
                     sys.exit(1)
+
+            # index.html 全体で「2020年11月20日発行」が2回（HEROと会場欄）出現すること
+            edition_date_count = text.count('2020年11月20日発行')
+            if edition_date_count != 2:
+                print(f"FAILED: Expected exactly 2 occurrences of '2020年11月20日発行', found {edition_date_count}")
+                sys.exit(1)
 
             # (3) 旧表記「研修費 17,980円 ＋ テキスト代 3,520円 ＝ 合計 21,500円」が残っていないこと
             if '研修費 17,980円 ＋ テキスト代 3,520円 ＝ 合計 21,500円' in text:
