@@ -1048,3 +1048,89 @@ section[id], [id] { scroll-margin-top: 90px; }
   color: #1f5f78 !important;
   text-decoration: underline !important;
 }
+/* -------------------------------------------
+ * Hero Price（受講料表示）
+ * ------------------------------------------- */
+.hero-price {
+  max-width: 800px;
+  margin: 0 auto 20px;
+  padding: 20px;
+  background-color: #fff;
+  color: #333;
+  border: 2px solid var(--color-sub);
+  border-radius: 8px;
+  text-align: center;
+}
+.hero-price-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--color-main-dark);
+  margin-bottom: 12px;
+}
+.hero-price-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+.hero-price-item {
+  background-color: var(--color-bg-light);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 14px 12px;
+}
+.hero-price-course {
+  display: inline-block;
+  background-color: var(--color-main);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 2px 14px;
+  border-radius: 20px;
+  margin-bottom: 6px;
+}
+.hero-price-total {
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1.2;
+  color: var(--color-main-dark);
+}
+.hero-price-total span {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-left: 2px;
+}
+.hero-price-breakdown {
+  font-size: 0.85rem;
+  color: #555;
+  margin-top: 4px;
+}
+.hero-price-discount {
+  margin-top: 10px;
+  padding: 8px;
+  background-color: #fff8dc;
+  border: 1px solid var(--color-cta);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #3a2f00;
+}
+.hero-price-discount strong {
+  display: block;
+  font-size: 1.4rem;
+  font-weight: 900;
+  line-height: 1.3;
+}
+.hero-price-discount-note {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+.hero-price-note {
+  font-size: 0.85rem;
+  color: #555;
+  margin-top: 10px;
+}
+@media (max-width: 768px) {
+  .hero-price { padding: 16px; }
+  .hero-price-grid { grid-template-columns: 1fr; gap: 12px; }
+  .hero-price-total { font-size: 1.8rem; }
+}

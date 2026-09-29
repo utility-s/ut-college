@@ -87,6 +87,31 @@ def validate():
                 print("FAILED: index.html missing '対面（会場）開催のみ'")
                 sys.exit(1)
 
+            # HERO受講料表示チェック
+            # (1) class="hero-price" が1つだけあること
+            hero_price_count = text.count('class="hero-price"')
+            if hero_price_count != 1:
+                print(f"FAILED: Expected exactly 1 class=\"hero-price\", found {hero_price_count}")
+                sys.exit(1)
+
+            # hero-price ブロックの抽出
+            hero_price_match = re.search(r'<div class="hero-price">(.*?)</div>\s*<div class="hero-refund-policy">', text, re.DOTALL)
+            if not hero_price_match:
+                print("FAILED: index.html missing <div class=\"hero-price\"> block before .hero-refund-policy")
+                sys.exit(1)
+            hero_price_block = hero_price_match.group(1)
+
+            # (2) hero-price ブロック内に「基礎研修」「実践研修」「21,500」「17,980円」「3,520円」「指定テキストをお持ちの方」が含まれること
+            for req in ['基礎研修', '実践研修', '21,500', '17,980円', '3,520円', '指定テキストをお持ちの方']:
+                if req not in hero_price_block:
+                    print(f"FAILED: hero-price block missing required text: '{req}'")
+                    sys.exit(1)
+
+            # (3) 旧表記「研修費 17,980円 ＋ テキスト代 3,520円 ＝ 合計 21,500円」が残っていないこと
+            if '研修費 17,980円 ＋ テキスト代 3,520円 ＝ 合計 21,500円' in text:
+                print("FAILED: index.html contains old HERO price text '研修費 17,980円 ＋ テキスト代 3,520円 ＝ 合計 21,500円'")
+                sys.exit(1)
+
             # 公開表示の基礎研修新日程・情報検証
             required_strings = [
                 '2026年10月19日',
