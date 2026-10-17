@@ -128,7 +128,7 @@ def validate():
                 '2026年10月19日',
                 '2026年10月20日',
                 '2026年10月12日',
-                '追加募集受付中',
+                '受付終了',
                 '2027年2月4日',
                 '2027年1月28日',
                 '21,500円',
@@ -140,6 +140,18 @@ def validate():
                 if req not in text:
                     print(f"FAILED: index.html missing required text: '{req}'")
                     sys.exit(1)
+
+            # index.htmlに「追加募集受付中」が含まれていないこと
+            if '追加募集受付中' in text:
+                print("FAILED: index.html contains '追加募集受付中'")
+                sys.exit(1)
+
+            # Googleフォームへのリンクを含む btn-cta の出現回数が6であること（第2回ボタン削除により7から6に減少）
+            all_a_tags = re.findall(r'<a\s+[^>]+>', text)
+            form_cta_count = sum(1 for a in all_a_tags if google_form_url in a and 'btn-cta' in a)
+            if form_cta_count != 6:
+                print(f"FAILED: Expected exactly 6 Google form CTA buttons, found {form_cta_count}")
+                sys.exit(1)
 
             # 画面FAQの申込締切の回答（HTML）に年月日が無いこと
             faq_match = re.search(r'<div class="faq-question">\s*申込締切はいつですか？\s*</div>\s*<div class="faq-answer">(.*?)</div>', text, re.DOTALL)
@@ -248,7 +260,7 @@ def validate():
                     if kiso_oct_offers.get("priceCurrency") != "JPY":
                         print(f"FAILED: 基礎研修(10月) priceCurrency mismatch: {kiso_oct_offers.get('priceCurrency')}")
                         sys.exit(1)
-                    if kiso_oct_offers.get("availability") != "https://schema.org/InStock":
+                    if kiso_oct_offers.get("availability") != "https://schema.org/SoldOut":
                         print(f"FAILED: 基礎研修(10月) availability mismatch: {kiso_oct_offers.get('availability')}")
                         sys.exit(1)
                     if kiso_oct_offers.get("validThrough") != "2026-10-12":
