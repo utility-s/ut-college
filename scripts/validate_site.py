@@ -134,6 +134,9 @@ def validate():
             # 公開表示の基礎研修新日程・情報検証
             required_strings = [
                 '受付終了',
+                '2026年12月10日',
+                '2026年12月3日(木)',
+                '2026年度 第4回',
                 '2027年2月4日',
                 '2027年1月28日',
                 '21,500円',
@@ -152,11 +155,11 @@ def validate():
                 print("FAILED: index.html contains '追加募集受付中'")
                 sys.exit(1)
 
-            # Googleフォームへのリンクを含む btn-cta の出現回数が5であること（実践研修ボタン削除により6から5に減少）
+            # Googleフォームへのリンクを含む btn-cta の出現回数が6であること（基礎研修12月回の追加により5から6に増加）
             all_a_tags = re.findall(r'<a\s+[^>]+>', text)
             form_cta_count = sum(1 for a in all_a_tags if google_form_url in a and 'btn-cta' in a)
-            if form_cta_count != 5:
-                print(f"FAILED: Expected exactly 5 Google form CTA buttons, found {form_cta_count}")
+            if form_cta_count != 6:
+                print(f"FAILED: Expected exactly 6 Google form CTA buttons, found {form_cta_count}")
                 sys.exit(1)
 
             # 画面FAQの申込締切の回答（HTML）に年月日が無いこと
@@ -190,11 +193,12 @@ def validate():
 
                 if "@graph" in data:
                     all_events = [item for item in data["@graph"] if item.get("@type") == "Event"]
-                    if len(all_events) != 2:
-                        print(f"FAILED: Expected exactly 2 Event objects, found {len(all_events)}")
+                    if len(all_events) != 3:
+                        print(f"FAILED: Expected exactly 3 Event objects, found {len(all_events)}")
                         sys.exit(1)
 
                     kiso_oct_events = []
+                    kiso_dec_events = []
                     kiso_feb_events = []
                     jissen_events = []
                     for item in data["@graph"]:
@@ -203,6 +207,8 @@ def validate():
                             if "基礎研修" in name:
                                 if "2026年10月開催" in name or "2026-10-19" in item.get("startDate", ""):
                                     kiso_oct_events.append(item)
+                                elif "2026年12月開催" in name or "2026-12-10" in item.get("startDate", ""):
+                                    kiso_dec_events.append(item)
                                 elif "2027年2月開催" in name or "2027-02-04" in item.get("startDate", ""):
                                     kiso_feb_events.append(item)
                             elif "実践研修" in name:
@@ -248,6 +254,53 @@ def validate():
                         print(f"FAILED: Expected 0 基礎研修(10月) Event, found {len(kiso_oct_events)}")
                         sys.exit(1)
 
+                    # 基礎研修（2026年12月開催）Eventの検証
+                    if len(kiso_dec_events) != 1:
+                        print(f"FAILED: Expected exactly 1 基礎研修(2026年12月) Event, found {len(kiso_dec_events)}")
+                        sys.exit(1)
+                    kiso_dec = kiso_dec_events[0]
+                    if "東京都強度行動障害支援者養成研修（基礎研修・2026年12月開催）" not in kiso_dec.get("name", ""):
+                        print(f"FAILED: 基礎研修(2026年12月) name mismatch: {kiso_dec.get('name')}")
+                        sys.exit(1)
+                    if "第3回" not in kiso_dec.get("description", ""):
+                        print("FAILED: 基礎研修(2026年12月) description missing '第3回'")
+                        sys.exit(1)
+                    if kiso_dec.get("startDate") != "2026-12-10T09:30:00+09:00":
+                        print(f"FAILED: 基礎研修(2026年12月) startDate mismatch: {kiso_dec.get('startDate')}")
+                        sys.exit(1)
+                    if kiso_dec.get("endDate") != "2026-12-11T17:30:00+09:00":
+                        print(f"FAILED: 基礎研修(2026年12月) endDate mismatch: {kiso_dec.get('endDate')}")
+                        sys.exit(1)
+                    if kiso_dec.get("eventStatus") != "https://schema.org/EventScheduled":
+                        print(f"FAILED: 基礎研修(2026年12月) eventStatus mismatch: {kiso_dec.get('eventStatus')}")
+                        sys.exit(1)
+                    if kiso_dec.get("eventAttendanceMode") != "https://schema.org/OfflineEventAttendanceMode":
+                        print("FAILED: 基礎研修(2026年12月) eventAttendanceMode not Offline")
+                        sys.exit(1)
+                    if kiso_dec.get("performer", {}).get("name") != "若林佳史":
+                        print(f"FAILED: 基礎研修(2026年12月) performer mismatch: {kiso_dec.get('performer')}")
+                        sys.exit(1)
+
+                    kiso_dec_offers = kiso_dec.get("offers", {})
+                    if str(kiso_dec_offers.get("price")) != "21500":
+                        print(f"FAILED: 基礎研修(2026年12月) price mismatch: {kiso_dec_offers.get('price')}")
+                        sys.exit(1)
+                    if kiso_dec_offers.get("priceCurrency") != "JPY":
+                        print(f"FAILED: 基礎研修(2026年12月) priceCurrency mismatch: {kiso_dec_offers.get('priceCurrency')}")
+                        sys.exit(1)
+                    if kiso_dec_offers.get("availability") != "https://schema.org/InStock":
+                        print(f"FAILED: 基礎研修(2026年12月) availability mismatch: {kiso_dec_offers.get('availability')}")
+                        sys.exit(1)
+                    if kiso_dec_offers.get("validFrom") != "2026-10-30":
+                        print(f"FAILED: 基礎研修(2026年12月) validFrom mismatch: {kiso_dec_offers.get('validFrom')}")
+                        sys.exit(1)
+                    if kiso_dec_offers.get("validThrough") != "2026-12-03":
+                        print(f"FAILED: 基礎研修(2026年12月) validThrough mismatch: {kiso_dec_offers.get('validThrough')}")
+                        sys.exit(1)
+                    if kiso_dec_offers.get("url") != google_form_url:
+                        print(f"FAILED: 基礎研修(2026年12月) url mismatch: {kiso_dec_offers.get('url')}")
+                        sys.exit(1)
+
                     # 基礎研修（2027年2月開催）Eventの検証
                     if len(kiso_feb_events) != 1:
                         print(f"FAILED: Expected exactly 1 基礎研修(2027年2月) Event, found {len(kiso_feb_events)}")
@@ -255,6 +308,9 @@ def validate():
                     kiso_feb = kiso_feb_events[0]
                     if "東京都強度行動障害支援者養成研修（基礎研修・2027年2月開催）" not in kiso_feb.get("name", ""):
                         print(f"FAILED: 基礎研修(2027年2月) name mismatch: {kiso_feb.get('name')}")
+                        sys.exit(1)
+                    if "第4回" not in kiso_feb.get("description", ""):
+                        print("FAILED: 基礎研修(2027年2月) description missing '第4回'")
                         sys.exit(1)
                     if kiso_feb.get("startDate") != "2027-02-04T09:30:00+09:00":
                         print(f"FAILED: 基礎研修(2027年2月) startDate mismatch: {kiso_feb.get('startDate')}")
