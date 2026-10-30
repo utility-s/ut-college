@@ -13,7 +13,15 @@ def validate():
         '2026年7月30日',
         '2026-08-06',
         '2026-08-07',
-        '2026-07-30'
+        '2026-07-30',
+        '2026年度 第2回',
+        '2026年10月19日',
+        '2026年10月20日',
+        '2026年10月12日',
+        '2026-10-19',
+        '2026-10-20',
+        '2026-10-12',
+        '2026年10月開催'
     ]
     google_form_url = 'https://docs.google.com/forms/d/e/1FAIpQLSePDVOsYhIBRIPuHGyegQP8HumM7EN6QQeE5Xfd3BGoet1c9A/viewform'
 
@@ -125,16 +133,14 @@ def validate():
 
             # 公開表示の基礎研修新日程・情報検証
             required_strings = [
-                '2026年10月19日',
-                '2026年10月20日',
-                '2026年10月12日',
                 '受付終了',
                 '2027年2月4日',
                 '2027年1月28日',
                 '21,500円',
                 '17,980円',
                 '3,520円',
-                google_form_url
+                google_form_url,
+                '次回の実践研修の日程は、決まり次第本ページでお知らせします'
             ]
             for req in required_strings:
                 if req not in text:
@@ -146,11 +152,11 @@ def validate():
                 print("FAILED: index.html contains '追加募集受付中'")
                 sys.exit(1)
 
-            # Googleフォームへのリンクを含む btn-cta の出現回数が6であること（第2回ボタン削除により7から6に減少）
+            # Googleフォームへのリンクを含む btn-cta の出現回数が5であること（実践研修ボタン削除により6から5に減少）
             all_a_tags = re.findall(r'<a\s+[^>]+>', text)
             form_cta_count = sum(1 for a in all_a_tags if google_form_url in a and 'btn-cta' in a)
-            if form_cta_count != 6:
-                print(f"FAILED: Expected exactly 6 Google form CTA buttons, found {form_cta_count}")
+            if form_cta_count != 5:
+                print(f"FAILED: Expected exactly 5 Google form CTA buttons, found {form_cta_count}")
                 sys.exit(1)
 
             # 画面FAQの申込締切の回答（HTML）に年月日が無いこと
@@ -183,6 +189,11 @@ def validate():
                     sys.exit(1)
 
                 if "@graph" in data:
+                    all_events = [item for item in data["@graph"] if item.get("@type") == "Event"]
+                    if len(all_events) != 2:
+                        print(f"FAILED: Expected exactly 2 Event objects, found {len(all_events)}")
+                        sys.exit(1)
+
                     kiso_oct_events = []
                     kiso_feb_events = []
                     jissen_events = []
@@ -232,42 +243,9 @@ def validate():
                                 print("FAILED: FAQPage deadline question answer contains specific date (YYYY年M月D日)")
                                 sys.exit(1)
 
-                    # 基礎研修（2026年10月開催）Eventの検証
-                    if len(kiso_oct_events) != 1:
-                        print(f"FAILED: Expected exactly 1 基礎研修(10月) Event, found {len(kiso_oct_events)}")
-                        sys.exit(1)
-                    kiso_oct = kiso_oct_events[0]
-                    if kiso_oct.get("startDate") != "2026-10-19T09:30:00+09:00":
-                        print(f"FAILED: 基礎研修(10月) startDate mismatch: {kiso_oct.get('startDate')}")
-                        sys.exit(1)
-                    if kiso_oct.get("endDate") != "2026-10-20T17:30:00+09:00":
-                        print(f"FAILED: 基礎研修(10月) endDate mismatch: {kiso_oct.get('endDate')}")
-                        sys.exit(1)
-                    if kiso_oct.get("eventStatus") != "https://schema.org/EventScheduled":
-                        print(f"FAILED: 基礎研修(10月) eventStatus mismatch: {kiso_oct.get('eventStatus')}")
-                        sys.exit(1)
-                    if kiso_oct.get("eventAttendanceMode") != "https://schema.org/OfflineEventAttendanceMode":
-                        print("FAILED: 基礎研修(10月) eventAttendanceMode not Offline")
-                        sys.exit(1)
-                    if kiso_oct.get("performer", {}).get("name") != "若林佳史":
-                        print(f"FAILED: 基礎研修(10月) performer mismatch: {kiso_oct.get('performer')}")
-                        sys.exit(1)
-
-                    kiso_oct_offers = kiso_oct.get("offers", {})
-                    if str(kiso_oct_offers.get("price")) != "21500":
-                        print(f"FAILED: 基礎研修(10月) price mismatch: {kiso_oct_offers.get('price')}")
-                        sys.exit(1)
-                    if kiso_oct_offers.get("priceCurrency") != "JPY":
-                        print(f"FAILED: 基礎研修(10月) priceCurrency mismatch: {kiso_oct_offers.get('priceCurrency')}")
-                        sys.exit(1)
-                    if kiso_oct_offers.get("availability") != "https://schema.org/SoldOut":
-                        print(f"FAILED: 基礎研修(10月) availability mismatch: {kiso_oct_offers.get('availability')}")
-                        sys.exit(1)
-                    if kiso_oct_offers.get("validThrough") != "2026-10-12":
-                        print(f"FAILED: 基礎研修(10月) validThrough mismatch: {kiso_oct_offers.get('validThrough')}")
-                        sys.exit(1)
-                    if kiso_oct_offers.get("url") != google_form_url:
-                        print(f"FAILED: 基礎研修(10月) url mismatch: {kiso_oct_offers.get('url')}")
+                    # 基礎研修（2026年10月開催）Eventが0件であることの検証
+                    if len(kiso_oct_events) != 0:
+                        print(f"FAILED: Expected 0 基礎研修(10月) Event, found {len(kiso_oct_events)}")
                         sys.exit(1)
 
                     # 基礎研修（2027年2月開催）Eventの検証
@@ -342,7 +320,7 @@ def validate():
                             print(f"FAILED: 実践研修 list offers prices mismatch: {prices}")
                             sys.exit(1)
                         for o in jissen_offers_raw:
-                            if o.get("availability") != "https://schema.org/InStock":
+                            if o.get("availability") != "https://schema.org/SoldOut":
                                 print(f"FAILED: 実践研修 offer availability mismatch: {o.get('availability')}")
                                 sys.exit(1)
                             if o.get("validThrough") != "2026-10-29":
@@ -355,7 +333,7 @@ def validate():
                                 print(f"FAILED: 実践研修 offer url mismatch: {o.get('url')}")
                                 sys.exit(1)
                     elif isinstance(jissen_offers_raw, dict):
-                        if jissen_offers_raw.get("availability") != "https://schema.org/InStock":
+                        if jissen_offers_raw.get("availability") != "https://schema.org/SoldOut":
                             print(f"FAILED: 実践研修 availability mismatch: {jissen_offers_raw.get('availability')}")
                             sys.exit(1)
                         if jissen_offers_raw.get("validThrough") != "2026-10-29":
