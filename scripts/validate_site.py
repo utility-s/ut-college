@@ -172,6 +172,51 @@ def validate():
                 print("FAILED: index.html screen FAQ answer contains specific date (YYYY年M月D日)")
                 sys.exit(1)
 
+            # 画面FAQの受講確定の回答（HTML）の存在と年月日のチェック
+            confirm_faq_match = re.search(r'<div class="faq-question">\s*申込みをしたら受講確定ですか？\s*</div>\s*<div class="faq-answer">(.*?)</div>', text, re.DOTALL)
+            if not confirm_faq_match:
+                print("FAILED: index.html missing screen FAQ for '申込みをしたら受講確定ですか？'")
+                sys.exit(1)
+            screen_confirm_answer = confirm_faq_match.group(1)
+            if re.search(r'\d{4}年\d{1,2}月\d{1,2}日', screen_confirm_answer):
+                print("FAILED: index.html screen FAQ confirm answer contains specific date (YYYY年M月D日)")
+                sys.exit(1)
+
+            # 受講確定条件およびボタン文言の検証
+            # 1. 「受講をお申し込む」が0回であること
+            if '受講をお申し込む' in text:
+                print("FAILED: index.html contains '受講をお申し込む'")
+                sys.exit(1)
+
+            # 2. 「受講を申し込む」が3回（HERO 1回 ＋ 基礎研修第3回 1回 ＋ 基礎研修第4回 1回）であること
+            apply_btn_count = text.count('受講を申し込む')
+            if apply_btn_count != 3:
+                print(f"FAILED: Expected exactly 3 occurrences of '受講を申し込む', found {apply_btn_count}")
+                sys.exit(1)
+
+            # 3. 「お申込みの完了だけでは、受講は確定しません。」が全体で3回（HERO 1回、FAQ画面表示 1回、JSON-LD 1回）出現すること
+            confirm_notice_count = text.count('お申込みの完了だけでは、受講は確定しません。')
+            if confirm_notice_count != 3:
+                print(f"FAILED: Expected exactly 3 occurrences of 'お申込みの完了だけでは、受講は確定しません。' (HERO, screen FAQ, JSON-LD), found {confirm_notice_count}")
+                sys.exit(1)
+
+            # 4. 「受講決定通知が届いてからお願いいたします。」が index.html にあること
+            if '受講決定通知が届いてからお願いいたします。' not in text:
+                print("FAILED: index.html missing '受講決定通知が届いてからお願いいたします。'")
+                sys.exit(1)
+
+            # 5. 「※受講確定は「受講決定通知」の送付をもって行います。」がちょうど1回であること
+            kiso_confirm_note_count = text.count('※受講確定は「受講決定通知」の送付をもって行います。')
+            if kiso_confirm_note_count != 1:
+                print(f"FAILED: Expected exactly 1 occurrence of '※受講確定は「受講決定通知」の送付をもって行います。', found {kiso_confirm_note_count}")
+                sys.exit(1)
+
+            # 7. a.btn-cta の数が事前調査(e)と同じ（6個）であること
+            cta_btn_matches = re.findall(r'<a\s+[^>]*class="[^"]*\bbtn-cta\b[^"]*"', text)
+            if len(cta_btn_matches) != 6:
+                print(f"FAILED: Expected exactly 6 a.btn-cta elements, found {len(cta_btn_matches)}")
+                sys.exit(1)
+
             # 旧基礎研修情報の残存チェック
             found_old = [p for p in old_kiso_patterns if p in text]
             if found_old:
@@ -247,6 +292,23 @@ def validate():
                                 sys.exit(1)
                             if re.search(r'\d{4}年\d{1,2}月\d{1,2}日', ans_text):
                                 print("FAILED: FAQPage deadline question answer contains specific date (YYYY年M月D日)")
+                                sys.exit(1)
+
+                            # 申込みをしたら受講確定ですか？ Questionの検証
+                            confirm_questions = [q for q in main_entity if q.get("name") == "申込みをしたら受講確定ですか？"]
+                            if len(confirm_questions) != 1:
+                                print(f"FAILED: Expected exactly 1 FAQPage question '申込みをしたら受講確定ですか？', found {len(confirm_questions)}")
+                                sys.exit(1)
+                            confirm_q = confirm_questions[0]
+                            confirm_ans = confirm_q.get("acceptedAnswer", {}).get("text", "")
+                            if "原則として先着順" not in confirm_ans:
+                                print("FAILED: FAQPage confirm question answer missing '原則として先着順'")
+                                sys.exit(1)
+                            if "受講決定通知" not in confirm_ans:
+                                print("FAILED: FAQPage confirm question answer missing '受講決定通知'")
+                                sys.exit(1)
+                            if re.search(r'\d{4}年\d{1,2}月\d{1,2}日', confirm_ans):
+                                print("FAILED: FAQPage confirm question answer contains specific date (YYYY年M月D日)")
                                 sys.exit(1)
 
                     # 基礎研修（2026年10月開催）Eventが0件であることの検証
