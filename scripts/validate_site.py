@@ -14,7 +14,7 @@ def validate():
         '2026-08-06',
         '2026-08-07',
         '2026-07-30',
-        '2026年度 第2回',
+        '基礎研修（2026年度 第2回）',
         '2026年10月19日',
         '2026年10月20日',
         '2026年10月12日',
@@ -22,6 +22,12 @@ def validate():
         '2026-10-20',
         '2026-10-12',
         '2026年10月開催'
+    ]
+    old_jissen_patterns = [
+        '2026年11月5日',
+        '2026-11-05',
+        '2026年10月29日',
+        '2026-10-29'
     ]
     google_form_url = 'https://docs.google.com/forms/d/e/1FAIpQLSePDVOsYhIBRIPuHGyegQP8HumM7EN6QQeE5Xfd3BGoet1c9A/viewform'
 
@@ -131,35 +137,41 @@ def validate():
                 print("FAILED: index.html contains old HERO price text '研修費 17,980円 ＋ テキスト代 3,520円 ＝ 合計 21,500円'")
                 sys.exit(1)
 
-            # 公開表示の基礎研修新日程・情報検証
+            # 公開表示の基礎研修・実践研修新日程・情報検証
             required_strings = [
-                '受付終了',
                 '2026年12月10日',
                 '2026年12月3日(木)',
                 '2026年度 第4回',
                 '2027年2月4日',
                 '2027年1月28日',
+                '2027年1月14日',
+                '2027年1月7日(木)',
+                '実践研修（2026年度 第2回）',
                 '21,500円',
                 '17,980円',
                 '3,520円',
-                google_form_url,
-                '次回の実践研修の日程は、決まり次第本ページでお知らせします'
+                google_form_url
             ]
             for req in required_strings:
                 if req not in text:
                     print(f"FAILED: index.html missing required text: '{req}'")
                     sys.exit(1)
 
+            # 「次回の実践研修の日程は」が0回であること
+            if '次回の実践研修の日程は' in text:
+                print("FAILED: index.html still contains '次回の実践研修の日程は'")
+                sys.exit(1)
+
             # index.htmlに「追加募集受付中」が含まれていないこと
             if '追加募集受付中' in text:
                 print("FAILED: index.html contains '追加募集受付中'")
                 sys.exit(1)
 
-            # Googleフォームへのリンクを含む btn-cta の出現回数が6であること（基礎研修12月回の追加により5から6に増加）
+            # Googleフォームへのリンクを含む btn-cta の出現回数が7であること（実践研修第2回の追加により6から7に増加）
             all_a_tags = re.findall(r'<a\s+[^>]+>', text)
             form_cta_count = sum(1 for a in all_a_tags if google_form_url in a and 'btn-cta' in a)
-            if form_cta_count != 6:
-                print(f"FAILED: Expected exactly 6 Google form CTA buttons, found {form_cta_count}")
+            if form_cta_count != 7:
+                print(f"FAILED: Expected exactly 7 Google form CTA buttons, found {form_cta_count}")
                 sys.exit(1)
 
             # 画面FAQの申込締切の回答（HTML）に年月日が無いこと
@@ -188,10 +200,10 @@ def validate():
                 print("FAILED: index.html contains '受講をお申し込む'")
                 sys.exit(1)
 
-            # 2. 「受講を申し込む」が3回（HERO 1回 ＋ 基礎研修第3回 1回 ＋ 基礎研修第4回 1回）であること
+            # 2. 「受講を申し込む」が4回（HERO 1回 ＋ 基礎研修第3回 1回 ＋ 基礎研修第4回 1回 ＋ 実践研修第2回 1回）であること
             apply_btn_count = text.count('受講を申し込む')
-            if apply_btn_count != 3:
-                print(f"FAILED: Expected exactly 3 occurrences of '受講を申し込む', found {apply_btn_count}")
+            if apply_btn_count != 4:
+                print(f"FAILED: Expected exactly 4 occurrences of '受講を申し込む', found {apply_btn_count}")
                 sys.exit(1)
 
             # 3. 「お申込みの完了だけでは、受講は確定しません。」が全体で3回（HERO 1回、FAQ画面表示 1回、JSON-LD 1回）出現すること
@@ -205,22 +217,26 @@ def validate():
                 print("FAILED: index.html missing '受講決定通知が届いてからお願いいたします。'")
                 sys.exit(1)
 
-            # 5. 「※受講確定は「受講決定通知」の送付をもって行います。」がちょうど1回であること
+            # 5. 「※受講確定は「受講決定通知」の送付をもって行います。」がちょうど2回（基礎研修カード 1回 ＋ 実践研修カード 1回）であること
             kiso_confirm_note_count = text.count('※受講確定は「受講決定通知」の送付をもって行います。')
-            if kiso_confirm_note_count != 1:
-                print(f"FAILED: Expected exactly 1 occurrence of '※受講確定は「受講決定通知」の送付をもって行います。', found {kiso_confirm_note_count}")
+            if kiso_confirm_note_count != 2:
+                print(f"FAILED: Expected exactly 2 occurrences of '※受講確定は「受講決定通知」の送付をもって行います。', found {kiso_confirm_note_count}")
                 sys.exit(1)
 
-            # 7. a.btn-cta の数が事前調査(e)と同じ（6個）であること
+            # 7. a.btn-cta の数が7個（事前調査6個より1つ多い数）であること
             cta_btn_matches = re.findall(r'<a\s+[^>]*class="[^"]*\bbtn-cta\b[^"]*"', text)
-            if len(cta_btn_matches) != 6:
-                print(f"FAILED: Expected exactly 6 a.btn-cta elements, found {len(cta_btn_matches)}")
+            if len(cta_btn_matches) != 7:
+                print(f"FAILED: Expected exactly 7 a.btn-cta elements, found {len(cta_btn_matches)}")
                 sys.exit(1)
 
-            # 旧基礎研修情報の残存チェック
+            # 旧基礎研修情報・旧実践研修第1回情報の残存チェック
             found_old = [p for p in old_kiso_patterns if p in text]
             if found_old:
                 print(f"FAILED: index.html contains old 基礎研修 info: {found_old}")
+                sys.exit(1)
+            found_old_jissen = [p for p in old_jissen_patterns if p in text]
+            if found_old_jissen:
+                print(f"FAILED: index.html contains old 実践研修 info: {found_old_jissen}")
                 sys.exit(1)
 
             # 6 & 13. index.html内のapplication/ld+jsonを抽出し、解析・検証する
@@ -412,10 +428,16 @@ def validate():
                         print(f"FAILED: Expected exactly 1 実践研修 Event, found {len(jissen_events)}")
                         sys.exit(1)
                     jissen = jissen_events[0]
-                    if jissen.get("startDate") != "2026-11-05T09:30:00+09:00":
+                    if jissen.get("name") != "東京都強度行動障害支援者養成研修（実践研修・2027年1月開催）":
+                        print(f"FAILED: 実践研修 name mismatch: {jissen.get('name')}")
+                        sys.exit(1)
+                    if "2026年度 第2回" not in jissen.get("description", ""):
+                        print("FAILED: 実践研修 description missing '2026年度 第2回'")
+                        sys.exit(1)
+                    if jissen.get("startDate") != "2027-01-14T09:30:00+09:00":
                         print(f"FAILED: 実践研修 startDate mismatch: {jissen.get('startDate')}")
                         sys.exit(1)
-                    if jissen.get("endDate") != "2026-11-06T17:30:00+09:00":
+                    if jissen.get("endDate") != "2027-01-15T17:30:00+09:00":
                         print(f"FAILED: 実践研修 endDate mismatch: {jissen.get('endDate')}")
                         sys.exit(1)
                     if jissen.get("eventStatus") != "https://schema.org/EventScheduled":
@@ -432,34 +454,29 @@ def validate():
                         sys.exit(1)
 
                     jissen_offers_raw = jissen.get("offers")
-                    if isinstance(jissen_offers_raw, list):
-                        prices = {str(o.get("price")) for o in jissen_offers_raw}
-                        if prices != {"21500", "17980"}:
-                            print(f"FAILED: 実践研修 list offers prices mismatch: {prices}")
-                            sys.exit(1)
-                        for o in jissen_offers_raw:
-                            if o.get("availability") != "https://schema.org/SoldOut":
-                                print(f"FAILED: 実践研修 offer availability mismatch: {o.get('availability')}")
-                                sys.exit(1)
-                            if o.get("validThrough") != "2026-10-29":
-                                print(f"FAILED: 実践研修 offer validThrough mismatch: {o.get('validThrough')}")
-                                sys.exit(1)
-                            if o.get("priceCurrency") != "JPY":
-                                print(f"FAILED: 実践研修 offer priceCurrency mismatch: {o.get('priceCurrency')}")
-                                sys.exit(1)
-                            if o.get("url") != google_form_url:
-                                print(f"FAILED: 実践研修 offer url mismatch: {o.get('url')}")
-                                sys.exit(1)
-                    elif isinstance(jissen_offers_raw, dict):
-                        if jissen_offers_raw.get("availability") != "https://schema.org/SoldOut":
-                            print(f"FAILED: 実践研修 availability mismatch: {jissen_offers_raw.get('availability')}")
-                            sys.exit(1)
-                        if jissen_offers_raw.get("validThrough") != "2026-10-29":
-                            print(f"FAILED: 実践研修 validThrough mismatch: {jissen_offers_raw.get('validThrough')}")
-                            sys.exit(1)
-                    else:
-                        print("FAILED: 実践研修 offers is neither dict nor list")
+                    if not isinstance(jissen_offers_raw, list) or len(jissen_offers_raw) != 2:
+                        print(f"FAILED: 実践研修 offers must be a list of 2 items, got: {type(jissen_offers_raw).__name__}")
                         sys.exit(1)
+                    prices = {str(o.get("price")) for o in jissen_offers_raw}
+                    if prices != {"21500", "17980"}:
+                        print(f"FAILED: 実践研修 list offers prices mismatch: {prices}")
+                        sys.exit(1)
+                    for o in jissen_offers_raw:
+                        if o.get("availability") != "https://schema.org/InStock":
+                            print(f"FAILED: 実践研修 offer availability mismatch: {o.get('availability')}")
+                            sys.exit(1)
+                        if o.get("validFrom") != "2026-11-17":
+                            print(f"FAILED: 実践研修 offer validFrom mismatch: {o.get('validFrom')}")
+                            sys.exit(1)
+                        if o.get("validThrough") != "2027-01-07":
+                            print(f"FAILED: 実践研修 offer validThrough mismatch: {o.get('validThrough')}")
+                            sys.exit(1)
+                        if o.get("priceCurrency") != "JPY":
+                            print(f"FAILED: 実践研修 offer priceCurrency mismatch: {o.get('priceCurrency')}")
+                            sys.exit(1)
+                        if o.get("url") != google_form_url:
+                            print(f"FAILED: 実践研修 offer url mismatch: {o.get('url')}")
+                            sys.exit(1)
 
         # 10. index.html、terms.html、tokushoho.htmlに返金規定が存在する
         if fname in ['index.html', 'terms.html', 'tokushoho.html']:
